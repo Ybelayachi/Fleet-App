@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fleet-backend
+  namespace: fleet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fleet-backend
+  template:
+    metadata:
+      labels:
+        app: fleet-backend
+    spec:
+      containers:
+        - name: fleet-backend
+          image: projetangular-fleet-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1024Mi"
+          envFrom:
+            - configMapRef:
+                name: fleet-backend-config
+            - secretRef:
+                name: fleet-backend-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleet-backend
+  namespace: fleet
+spec:
+  selector:
+    app: fleet-backend
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP

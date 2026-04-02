@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fleet-backend-config
+  namespace: fleet
+data:
+  SPRING_PROFILES_ACTIVE: "docker"
+  SERVER_PORT: "8080"
+  SPRING_DATASOURCE_URL: "jdbc:db2://host.docker.internal:50000/NSI:currentSchema=FLEETDB;"
+  APP_JWT_EXPIRATION_MS: "86400000"

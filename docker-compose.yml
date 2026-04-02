@@ -1,0 +1,32 @@
+services:
+  fleet-backend:
+    build:
+      context: ./fleet-backend
+      dockerfile: Dockerfile
+    container_name: fleet-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:db2://host.docker.internal:50000/NSI:currentSchema=FLEETDB;}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-db2admin}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-DBZ87ken/1987@}
+      APP_JWT_SECRET: ${APP_JWT_SECRET:-ChangeThisSecretKeyForProdChangeThisSecretKey}
+      APP_JWT_EXPIRATION_MS: ${APP_JWT_EXPIRATION_MS:-86400000}
+    ports:
+      - '8080:8080'
+    restart: unless-stopped
+
+  fleet-frontend:
+    build:
+      context: ./fleet-frontend
+      dockerfile: Dockerfile
+    container_name: fleet-frontend
+    environment:
+      NODE_ENV: production
+      PORT: 4200
+      BACKEND_URL: http://fleet-backend:8080
+    depends_on:
+      - fleet-backend
+    ports:
+      - '4200:4200'
+    restart: unless-stopped

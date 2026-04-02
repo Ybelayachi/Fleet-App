@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fleet-frontend
+  namespace: fleet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fleet-frontend
+  template:
+    metadata:
+      labels:
+        app: fleet-frontend
+    spec:
+      containers:
+        - name: fleet-frontend
+          image: projetangular-fleet-frontend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 4200
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "4200"
+            - name: BACKEND_URL
+              value: "http://fleet-backend:8080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleet-frontend
+  namespace: fleet
+spec:
+  selector:
+    app: fleet-frontend
+  ports:
+    - name: http
+      port: 4200
+      targetPort: 4200
+      nodePort: 30200
+  type: NodePort
