@@ -75,7 +75,6 @@ Voir [DOCUMENTATION.md](./DOCUMENTATION.md) pour la documentation technique comp
 ├── selenium-e2e/        # Tests E2E UI (Selenium)
 ├── k8s/                 # Manifestes Kubernetes
 ├── docker-compose.yml   # Orchestration Docker
-└── DOCUMENTATION.md     # Documentation technique complète
 ```
 
 ## 🧪 Tests
