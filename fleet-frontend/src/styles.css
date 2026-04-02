@@ -1,0 +1,111 @@
+/* Global styles */
+
+:root {
+  --ink-900: #0f172a;
+  --ink-700: #334155;
+  --ink-500: #64748b;
+  --surface: #f8fafc;
+  --accent: #38bdf8;
+  --accent-strong: #0ea5e9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--ink-900);
+  background: var(--surface);
+}
+
+h1, h2, h3 {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  margin: 0 0 8px;
+}
+
+a {
+  color: inherit;
+}
+
+/* PrimeNG light overrides */
+.p-inputtext,
+.p-select,
+.p-select-label,
+.p-select-overlay,
+.p-datatable,
+.p-datatable-wrapper,
+.p-datatable-table,
+.p-dropdown-panel,
+.p-overlay,
+.p-card,
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='number'],
+input[type='date'],
+textarea,
+select {
+  background-color: #ffffff !important;
+  color: var(--ink-900) !important;
+}
+
+/* Ensure autofill doesn't turn inputs dark */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: var(--ink-900) !important;
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  box-shadow: 0 0 0px 1000px #ffffff inset !important;
+}
+
+.p-inputtext,
+.p-select,
+.p-dropdown,
+.p-multiselect {
+  border-color: #dbe3f0 !important;
+  box-shadow: none !important;
+  background-color: #ffffff !important;
+}
+
+.p-inputtext:focus,
+.p-select.p-focus,
+.p-dropdown.p-focus,
+.p-multiselect.p-focus {
+  border-color: var(--accent-strong);
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+
+.p-datatable .p-datatable-tbody > tr {
+  background-color: #ffffff;
+}
+
+.p-datatable .p-datatable-tbody > tr:nth-child(even) {
+  background-color: #f9fbff;
+}
+
+/* Sky-blue buttons */
+.p-button {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #0b1220 !important;
+}
+
+.p-button:hover {
+  background: var(--accent-strong) !important;
+  border-color: var(--accent-strong) !important;
+  color: #0b1220 !important;
+}
+
+.p-button.p-button-outlined {
+  background: transparent !important;
+  color: var(--accent-strong) !important;
+  border-color: var(--accent-strong) !important;
+}

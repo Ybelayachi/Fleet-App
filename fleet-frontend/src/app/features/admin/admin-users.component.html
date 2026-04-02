@@ -1,0 +1,130 @@
+<section class="panel">
+  <h2>Utilisateurs</h2>
+  <p class="panel__subtitle">Créer et gérer les accès utilisateurs.</p>
+
+  <form [formGroup]="form" (ngSubmit)="create()" class="panel__form">
+    <div class="field">
+      <label for="user-email">E-mail</label>
+      <input id="user-email" pInputText type="email" formControlName="email" />
+    </div>
+
+    <div class="field">
+      <label for="user-first-name">Prénom</label>
+      <input id="user-first-name" pInputText formControlName="firstName" />
+    </div>
+
+    <div class="field">
+      <label for="user-last-name">Nom</label>
+      <input id="user-last-name" pInputText formControlName="lastName" />
+    </div>
+
+    <div class="field">
+      <label for="user-role">Rôle</label>
+      <p-select
+        inputId="user-role"
+        [options]="roleOptions"
+        formControlName="role"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Sélectionner un rôle"
+      ></p-select>
+    </div>
+
+    <div class="field">
+      <label for="user-password">Mot de passe</label>
+      <input id="user-password" pInputText type="password" formControlName="password" />
+    </div>
+
+    <div class="field field--inline">
+      <label for="user-active">Actif</label>
+      <p-toggleSwitch inputId="user-active" formControlName="active"></p-toggleSwitch>
+    </div>
+
+    <button pButton type="submit" label="Créer un utilisateur"></button>
+  </form>
+
+  <!-- Search Filter -->
+  <div class="search-container" *ngIf="allUsers.length">
+    <div class="field search-field">
+      <label for="user-search">Rechercher utilisateurs</label>
+      <input
+        id="user-search"
+        pInputText
+        placeholder="E-mail, prénom, nom..."
+        (input)="onSearchChange($event)"
+        [value]="searchTerm"
+      />
+    </div>
+  </div>
+
+  <!-- Pagination Controls Top -->
+  <div class="pagination" *ngIf="filteredUsers.length">
+    <button pButton type="button" label="Précédent" (click)="prevPage()" [disabled]="currentPage === 0"></button>
+    <span class="pagination__info">
+      Page {{ currentPage + 1 }} sur {{ filteredTotalPages }} ({{ filteredTotalElements }} utilisateurs)
+    </span>
+    <button
+      pButton
+      type="button"
+      label="Suivant"
+      (click)="nextPage()"
+      [disabled]="currentPage >= filteredTotalPages - 1"
+    ></button>
+  </div>
+
+  <p-table
+    *ngIf="displayedUsers.length"
+    [value]="displayedUsers"
+    styleClass="users-table"
+    [tableStyle]="{ 'width': '100%' }"
+    sortMode="single"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="email">
+          E-mail
+          <p-sortIcon field="email"></p-sortIcon>
+        </th>
+        <th pSortableColumn="firstName">
+          Nom
+          <p-sortIcon field="firstName"></p-sortIcon>
+        </th>
+        <th pSortableColumn="role">
+          Rôle
+          <p-sortIcon field="role"></p-sortIcon>
+        </th>
+        <th pSortableColumn="active">
+          Actif
+          <p-sortIcon field="active"></p-sortIcon>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-user>
+      <tr>
+        <td>{{ user.email }}</td>
+        <td>{{ (user.firstName || '') + ' ' + (user.lastName || '') }}</td>
+        <td>{{ user.role }}</td>
+        <td>{{ user.active ? 'Oui' : 'Non' }}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <div class="no-results" *ngIf="filteredUsers.length === 0 && allUsers.length > 0">
+    Aucun utilisateur ne correspond à votre recherche.
+  </div>
+
+  <!-- Pagination Controls Bottom -->
+  <div class="pagination" *ngIf="filteredUsers.length">
+    <button pButton type="button" label="Précédent" (click)="prevPage()" [disabled]="currentPage === 0"></button>
+    <span class="pagination__info">
+      Page {{ currentPage + 1 }} sur {{ filteredTotalPages }} ({{ filteredTotalElements }} utilisateurs)
+    </span>
+    <button
+      pButton
+      type="button"
+      label="Suivant"
+      (click)="nextPage()"
+      [disabled]="currentPage >= filteredTotalPages - 1"
+    ></button>
+  </div>
+</section>

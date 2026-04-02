@@ -1,0 +1,48 @@
+.login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at top, #f5f4ef 0%, #e8eef3 45%, #dbe4ec 100%);
+  padding: 24px;
+}
+
+.login__card {
+  width: min(420px, 100%);
+  padding: 28px;
+  border-radius: 16px;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.15);
+}
+
+.login__subtitle {
+  color: #475569;
+  margin-bottom: 24px;
+}
+
+.login__field {
+  width: 100%;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.login__error {
+  color: #b91c1c;
+  margin-bottom: 12px;
+}
+
+.login__submit {
+  width: 100%;
+  height: 44px;
+}
+
+:host ::ng-deep .p-inputtext {
+  width: 100%;
+}
+
+:host ::ng-deep .login__spinner {
+  width: 20px;
+  height: 20px;
+  margin-left: 8px;
+}

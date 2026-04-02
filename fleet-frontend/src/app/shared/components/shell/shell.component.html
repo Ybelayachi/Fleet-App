@@ -1,0 +1,100 @@
+<div class="shell" [class.is-collapsed]="!sidebarOpen">
+  <aside class="shell__sidenav" [class.is-collapsed]="!sidebarOpen">
+    <div class="shell__brand">
+      <img src="/nsi_logo_2018_final_small.jpg" alt="Logo NSI" class="shell__logo-img" />
+      <div class="shell__title-container">
+        <span class="shell__logo">Fleet KM</span>
+        <span class="shell__tag">EV</span>
+      </div>
+    </div>
+
+    <nav class="shell__nav">
+      <a
+        class="shell__nav-link"
+        routerLink="/driver/vehicles"
+        routerLinkActive="active"
+        *ngIf="(role$ | async) === 'ROLE_DRIVER'"
+      >
+        <i class="pi pi-car"></i>
+        <span>Mes véhicules</span>
+      </a>
+      <a
+        class="shell__nav-link"
+        routerLink="/driver/mileage"
+        routerLinkActive="active"
+        *ngIf="(role$ | async) === 'ROLE_DRIVER'"
+      >
+        <i class="pi pi-gauge"></i>
+        <span>Déclarer le kilométrage</span>
+      </a>
+      <a
+        class="shell__nav-link"
+        routerLink="/driver/history"
+        routerLinkActive="active"
+        *ngIf="(role$ | async) === 'ROLE_DRIVER'"
+      >
+        <i class="pi pi-calendar"></i>
+        <span>Historique kilométrages</span>
+      </a>
+
+      <a
+        class="shell__nav-link"
+        routerLink="/fleet/dashboard"
+        routerLinkActive="active"
+        *ngIf="isFleetRole((role$ | async) ?? null)"
+      >
+        <i class="pi pi-chart-bar"></i>
+        <span>Tableau de bord flotte</span>
+      </a>
+
+      <a
+        class="shell__nav-link"
+        routerLink="/admin/users"
+        routerLinkActive="active"
+        *ngIf="isAdmin((role$ | async) ?? null)"
+      >
+        <i class="pi pi-users"></i>
+        <span>Utilisateurs</span>
+      </a>
+      <a
+        class="shell__nav-link"
+        routerLink="/admin/vehicles"
+        routerLinkActive="active"
+        *ngIf="isAdmin((role$ | async) ?? null)"
+      >
+        <i class="pi pi-car"></i>
+        <span>Véhicules</span>
+      </a>
+      <a
+        class="shell__nav-link"
+        routerLink="/admin/assignments"
+        routerLinkActive="active"
+        *ngIf="isAdmin((role$ | async) ?? null)"
+      >
+        <i class="pi pi-arrows-h"></i>
+        <span>Affectations</span>
+      </a>
+    </nav>
+  </aside>
+
+  <div class="shell__main">
+    <header class="shell__toolbar">
+      <button
+        pButton
+        type="button"
+        class="shell__menu-btn"
+        icon="pi pi-bars"
+        (click)="toggleSidebar()"
+        aria-label="Basculer la navigation"
+      ></button>
+      <span class="shell__title">Application de gestion des kilométrages des véhicules éléctriques</span>
+      <span class="shell__spacer"></span>
+      <span class="shell__user" *ngIf="email">{{ email }}</span>
+      <button pButton type="button" label="Déconnexion" (click)="logout()"></button>
+    </header>
+
+    <main class="shell__content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

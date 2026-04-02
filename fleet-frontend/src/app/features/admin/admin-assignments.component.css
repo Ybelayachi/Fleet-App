@@ -1,0 +1,86 @@
+.panel {
+  padding: 20px;
+  max-width: 640px;
+}
+
+.panel__subtitle {
+  color: #64748b;
+  margin-bottom: 16px;
+}
+
+.panel__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.search-box {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.search-field {
+  flex: 1;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+:host ::ng-deep .p-inputtext {
+  width: 100%;
+}
+
+.clear-btn {
+  margin-top: 8px;
+  padding: 8px 16px;
+  font-size: 12px;
+  height: 40px;
+  align-self: center;
+}
+
+.results {
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: #f9fafb;
+  margin-bottom: 12px;
+}
+
+.result-item {
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.result-item:last-child {
+  border-bottom: none;
+}
+
+.result-item:hover {
+  background-color: #f0f9ff;
+}
+
+.selected-item {
+  padding: 12px;
+  background-color: #d1fae5;
+  border: 1px solid #6ee7b7;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  color: #047857;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.panel__message {
+  color: #0f766e;
+  font-weight: 600;
+}

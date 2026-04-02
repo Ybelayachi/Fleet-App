@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: "jdbc:h2:mem:fleetkm_e2e;MODE=DB2;NON_KEYWORDS=YEAR,MONTH;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;INIT=CREATE SCHEMA IF NOT EXISTS FLEETDB\\;SET SCHEMA FLEETDB"
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        default_schema: FLEETDB
+        globally_quoted_identifiers: true
+    show-sql: false
+  flyway:
+    enabled: false
+  h2:
+    console:
+      enabled: true
+
+app:
+  jwt:
+    secret: ${APP_JWT_SECRET:ChangeThisSecretKeyForProdChangeThisSecretKey}
+    expiration-ms: ${APP_JWT_EXPIRATION_MS:86400000}
+
+server:
+  port: ${SERVER_PORT:8080}

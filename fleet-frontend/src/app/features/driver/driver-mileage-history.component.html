@@ -1,0 +1,82 @@
+<section class="panel">
+  <h2>Historique des kilométrages</h2>
+  <p class="panel__subtitle">Consultez vos déclarations mensuelles par véhicule.</p>
+
+  <form [formGroup]="form" class="panel__filters">
+    <div class="field">
+      <label for="history-year">Année</label>
+      <p-select
+        inputId="history-year"
+        [options]="yearOptions"
+        formControlName="year"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Toutes"
+      ></p-select>
+    </div>
+    <div class="field">
+      <label for="history-month">Mois</label>
+      <p-select
+        inputId="history-month"
+        [options]="monthOptions"
+        formControlName="month"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Tous"
+      ></p-select>
+    </div>
+
+    <div class="panel__actions">
+      <button pButton type="button" label="Réinitialiser" severity="secondary" (click)="clearFilters()"></button>
+    </div>
+  </form>
+
+  <div *ngIf="loading" class="panel__empty">Chargement de l'historique...</div>
+
+  <p-table
+    *ngIf="!loading && history.length > 0"
+    [value]="history"
+    styleClass="data-table"
+    [tableStyle]="{ 'width': '100%' }"
+    sortMode="single"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="year">
+          Période
+          <p-sortIcon field="year"></p-sortIcon>
+        </th>
+        <th pSortableColumn="vehicle.vin">
+          Véhicule
+          <p-sortIcon field="vehicle.vin"></p-sortIcon>
+        </th>
+        <th pSortableColumn="vehicle.licensePlate">
+          Plaque
+          <p-sortIcon field="vehicle.licensePlate"></p-sortIcon>
+        </th>
+        <th pSortableColumn="mileage">
+          Kilométrage (km)
+          <p-sortIcon field="mileage"></p-sortIcon>
+        </th>
+        <th pSortableColumn="declaredAt">
+          Déclaré le
+          <p-sortIcon field="declaredAt"></p-sortIcon>
+        </th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-row>
+      <tr>
+        <td>{{ row.month }}/{{ row.year }}</td>
+        <td>{{ row.vehicle?.brand || '-' }} {{ row.vehicle?.model || '-' }}<br /><span class="muted">{{ row.vehicle?.vin }}</span></td>
+        <td>{{ row.vehicle?.licensePlate || '-' }}</td>
+        <td>{{ row.mileage }}</td>
+        <td>{{ row.declaredAt ? (row.declaredAt | date: 'dd/MM/yyyy HH:mm') : '-' }}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <div class="panel__empty" *ngIf="!loading && !history.length">
+    Aucun kilométrage trouvé pour ce filtre.
+  </div>
+</section>

@@ -1,0 +1,92 @@
+.panel {
+  padding: 20px;
+}
+
+.panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.panel__subtitle {
+  color: #64748b;
+}
+
+.panel__filters {
+  display: flex;
+  gap: 12px;
+  margin: 16px 0 24px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 160px;
+}
+
+:host ::ng-deep .p-inputtext {
+  width: 100%;
+}
+
+.data-table {
+  margin-bottom: 16px;
+}
+
+:host ::ng-deep .p-datatable {
+  border: 1px solid #dbe3f0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  background: #ffffff;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  background: linear-gradient(90deg, #eef2ff 0%, #f8fafc 100%);
+  color: #0f172a;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 14px 18px;
+  border-bottom: 1px solid #dbe3f0;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #eef2f7;
+  color: #1f2937;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr:nth-child(even) {
+  background: #f9fbff;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr:hover {
+  background: #eef2ff;
+}
+
+.muted {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.status {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #e2f3f1;
+  color: #0f766e;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.status.missing {
+  background: #ffe4e6;
+  color: #be123c;
+}
+
+.panel__empty {
+  margin-top: 16px;
+  color: #64748b;
+}

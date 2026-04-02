@@ -1,0 +1,35 @@
+<div class="login">
+  <div class="login__card">
+    <h1 class="login__title" style="text-align: center;">Fleet KM EV</h1>
+    <img src="/nsi_logo_2018_final_small.jpg" alt="Logo NSI" class="login__logo" />
+    <p class="login__subtitle">Connectez-vous pour gérer les véhicules et le kilométrage.</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="login__field">
+        <label for="login-email">E-mail</label>
+        <input id="login-email" pInputText type="email" formControlName="email" />
+        <small class="login__error" *ngIf="form.get('email')?.hasError('required')">
+          L'e-mail est requis
+        </small>
+        <small class="login__error" *ngIf="form.get('email')?.hasError('email')">
+          L'e-mail est invalide
+        </small>
+      </div>
+
+      <div class="login__field">
+        <label for="login-password">Mot de passe</label>
+        <input id="login-password" pInputText type="password" formControlName="password" />
+        <small class="login__error" *ngIf="form.get('password')?.hasError('required')">
+          Le mot de passe est requis
+        </small>
+      </div>
+
+      <div class="login__error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+      <button pButton class="login__submit" type="submit" [disabled]="loading">
+        <span *ngIf="!loading">Se connecter</span>
+        <p-progressSpinner *ngIf="loading" styleClass="login__spinner" strokeWidth="4"></p-progressSpinner>
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,20 @@
+# Maven / Java build output
+/target/
+/bin/
+/out/
+
+# IDEs
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+/logs/

@@ -1,0 +1,34 @@
+<section class="panel">
+  <h2>Déclarer le kilométrage mensuel</h2>
+  <p class="panel__subtitle">Vous ne pouvez soumettre qu'une fois par mois.</p>
+
+  <div class="panel__meta">
+    <div>Période : {{ month }}/{{ year }}</div>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="panel__field">
+      <label for="mileage-vehicle">Véhicule</label>
+      <p-select
+        inputId="mileage-vehicle"
+        [options]="vehicleOptions"
+        formControlName="vehicleId"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Sélectionner un véhicule"
+      ></p-select>
+    </div>
+
+    <div class="panel__field">
+      <label for="mileage-value">Kilométrage (km)</label>
+      <input id="mileage-value" pInputText type="number" formControlName="mileage" />
+    </div>
+
+    <div class="panel__messages">
+      <span class="success" *ngIf="successMessage">{{ successMessage }}</span>
+      <span class="error" *ngIf="errorMessage">{{ errorMessage }}</span>
+    </div>
+
+    <button pButton type="submit" label="Soumettre le kilométrage"></button>
+  </form>
+</section>

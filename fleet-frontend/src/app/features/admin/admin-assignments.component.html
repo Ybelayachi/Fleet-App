@@ -1,0 +1,93 @@
+<section class="panel">
+  <h2>Affectations</h2>
+  <p class="panel__subtitle">Affecter des véhicules aux conducteurs.</p>
+
+  <form [formGroup]="form" (ngSubmit)="assign()" class="panel__form">
+    <!-- User Search -->
+    <div class="search-box">
+      <div class="field search-field">
+        <label for="assignment-user">Rechercher utilisateur (email, nom, prénom)</label>
+        <input
+          id="assignment-user"
+          pInputText
+          [value]="userSearchTerm"
+          (input)="onUserInput($event)"
+          (focus)="onUserSearchFocus()"
+          placeholder="Ex: john@example.com ou John"
+        />
+      </div>
+      
+      <button
+        *ngIf="selectedUser"
+        pButton
+        type="button"
+        label="Effacer"
+        (click)="clearUserSelection()"
+        class="clear-btn"
+      ></button>
+    </div>
+
+    <!-- User Results -->
+    <div class="results" *ngIf="filteredUsers.length > 0 && !selectedUser">
+      <div class="result-item" 
+        *ngFor="let user of filteredUsers | slice:0:10" 
+        (click)="selectUser(user)"
+        class="cursor-pointer">
+        <strong>{{ user.email }}</strong> - {{ user.firstName }} {{ user.lastName }}<br>
+        <small>{{ user.role }}</small>
+      </div>
+    </div>
+
+    <div *ngIf="selectedUser" class="selected-item">
+      <strong>Utilisateur sélectionné:</strong> {{ selectedUser.email }} ({{ selectedUser.firstName }} {{ selectedUser.lastName }})
+    </div>
+
+    <!-- Vehicle Search -->
+    <div class="search-box">
+      <div class="field search-field">
+        <label for="assignment-vehicle">Rechercher véhicule (numéro de plaque)</label>
+        <input
+          id="assignment-vehicle"
+          pInputText
+          [value]="vehicleSearchTerm"
+          (input)="onVehicleInput($event)"
+          (focus)="onVehicleSearchFocus()"
+          placeholder="Ex: AB-123-CD"
+        />
+      </div>
+      
+      <button
+        *ngIf="selectedVehicle"
+        pButton
+        type="button"
+        label="Effacer"
+        (click)="clearVehicleSelection()"
+        class="clear-btn"
+      ></button>
+    </div>
+
+    <!-- Vehicle Results -->
+    <div class="results" *ngIf="filteredVehicles.length > 0 && !selectedVehicle">
+      <div class="result-item" 
+        *ngFor="let vehicle of filteredVehicles | slice:0:10" 
+        (click)="selectVehicle(vehicle)"
+        class="cursor-pointer">
+        <strong>{{ vehicle.licensePlate }}</strong> - {{ vehicle.brand }} {{ vehicle.model }}<br>
+        <small>{{ vehicle.vin }}</small>
+      </div>
+    </div>
+
+    <div *ngIf="selectedVehicle" class="selected-item">
+      <strong>Véhicule sélectionné:</strong> {{ selectedVehicle.licensePlate }} - {{ selectedVehicle.brand }} {{ selectedVehicle.model }}
+    </div>
+
+    <button
+      pButton
+      type="submit"
+      label="Affecter"
+      [disabled]="!selectedUser || !selectedVehicle"
+    ></button>
+  </form>
+
+  <div class="panel__message" *ngIf="message">{{ message }}</div>
+</section>

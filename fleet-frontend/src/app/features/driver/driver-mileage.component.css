@@ -1,0 +1,39 @@
+.panel {
+  padding: 20px;
+  max-width: 560px;
+}
+
+.panel__subtitle {
+  color: #64748b;
+}
+
+.panel__meta {
+  margin: 16px 0 24px;
+  font-weight: 600;
+}
+
+.panel__field {
+  width: 100%;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+:host ::ng-deep .p-inputtext,
+:host ::ng-deep .p-dropdown {
+  width: 100%;
+}
+
+.panel__messages {
+  min-height: 24px;
+  margin-bottom: 12px;
+}
+
+.success {
+  color: #0f766e;
+}
+
+.error {
+  color: #b91c1c;
+}

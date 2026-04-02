@@ -1,0 +1,115 @@
+.panel {
+  padding: 20px;
+}
+
+.panel__subtitle {
+  color: #64748b;
+  margin-bottom: 16px;
+}
+
+.panel__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 140px;
+}
+
+.panel__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.data-table {
+  margin-top: 8px;
+}
+
+.muted {
+  color: #64748b;
+  font-size: 12px;
+}
+
+:host ::ng-deep .p-inputtext {
+  width: 100%;
+}
+
+:host ::ng-deep .p-select {
+  width: 100%;
+}
+
+:host ::ng-deep .p-select .p-select-label,
+:host ::ng-deep .p-select.p-focus .p-select-label,
+:host ::ng-deep .p-select.p-filled .p-select-label {
+  color: #000000 !important;
+  background: #ffffff !important;
+}
+
+:host ::ng-deep .p-select .p-select-label.p-placeholder {
+  color: #000000 !important;
+}
+
+:host ::ng-deep .p-select .p-select-dropdown {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+:host ::ng-deep .p-select-overlay {
+  background: #ffffff !important;
+}
+
+:host ::ng-deep .p-select-overlay .p-select-option,
+:host ::ng-deep .p-select-overlay .p-select-option .p-select-option-label {
+  color: #000000 !important;
+  background: #ffffff !important;
+}
+
+:host ::ng-deep .p-select-overlay .p-select-option.p-select-option-selected,
+:host ::ng-deep .p-select-overlay .p-select-option.p-highlight {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+:host ::ng-deep .p-datatable {
+  border: 1px solid #dbe3f0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  background: #ffffff;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+  background: linear-gradient(90deg, #eef2ff 0%, #f8fafc 100%);
+  color: #0f172a;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 14px 18px;
+  border-bottom: 1px solid #dbe3f0;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #eef2f7;
+  color: #1f2937;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr:nth-child(even) {
+  background: #f9fbff;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr:hover {
+  background: #eef2ff;
+}
+
+.panel__empty {
+  color: #64748b;
+  margin-top: 12px;
+}

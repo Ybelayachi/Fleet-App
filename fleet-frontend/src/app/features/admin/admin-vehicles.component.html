@@ -1,0 +1,84 @@
+<section class="panel">
+  <h2>Véhicules</h2>
+  <p class="panel__subtitle">Enregistrer et gérer les véhicules de la flotte.</p>
+
+  <form [formGroup]="form" (ngSubmit)="create()" class="panel__form">
+    <div class="field">
+      <label for="vehicle-vin">NIV</label>
+      <input id="vehicle-vin" pInputText formControlName="vin" />
+    </div>
+
+    <div class="field">
+      <label for="vehicle-brand">Marque</label>
+      <input id="vehicle-brand" pInputText formControlName="brand" />
+    </div>
+
+    <div class="field">
+      <label for="vehicle-model">Modèle</label>
+      <input id="vehicle-model" pInputText formControlName="model" />
+    </div>
+
+    <div class="field">
+      <label for="vehicle-plate">Plaque</label>
+      <input id="vehicle-plate" pInputText formControlName="licensePlate" />
+    </div>
+
+    <div class="field">
+      <label for="vehicle-service-date">Date de mise en service</label>
+      <input id="vehicle-service-date" pInputText type="date" formControlName="inServiceDate" />
+    </div>
+
+    <div class="field field--inline">
+      <label for="vehicle-active">Actif</label>
+      <p-toggleSwitch inputId="vehicle-active" formControlName="active"></p-toggleSwitch>
+    </div>
+
+    <div class="panel__messages">
+      <span class="success" *ngIf="successMessage">{{ successMessage }}</span>
+    </div>
+
+    <button pButton type="submit" label="Créer un véhicule"></button>
+  </form>
+
+  <p-table
+    *ngIf="vehicles.length"
+    [value]="vehicles"
+    styleClass="data-table"
+    [tableStyle]="{ 'width': '100%' }"
+    sortMode="single"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="vin">
+          NIV
+          <p-sortIcon field="vin"></p-sortIcon>
+        </th>
+        <th pSortableColumn="brand">
+          Marque
+          <p-sortIcon field="brand"></p-sortIcon>
+        </th>
+        <th pSortableColumn="model">
+          Modèle
+          <p-sortIcon field="model"></p-sortIcon>
+        </th>
+        <th pSortableColumn="licensePlate">
+          Plaque
+          <p-sortIcon field="licensePlate"></p-sortIcon>
+        </th>
+        <th pSortableColumn="active">
+          Actif
+          <p-sortIcon field="active"></p-sortIcon>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-vehicle>
+      <tr>
+        <td>{{ vehicle.vin }}</td>
+        <td>{{ vehicle.brand || '-' }}</td>
+        <td>{{ vehicle.model || '-' }}</td>
+        <td>{{ vehicle.licensePlate || '-' }}</td>
+        <td>{{ vehicle.active ? 'Oui' : 'Non' }}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</section>
