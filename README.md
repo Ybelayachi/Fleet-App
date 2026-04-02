@@ -99,7 +99,3 @@ mvn test
 # Mode visible :
 mvn test "-De2e.headless=false" "-De2e.pauseMs=3000"
 ```
-
-## 📧 Support
-
-NSI - support@fleet-km.example.com
