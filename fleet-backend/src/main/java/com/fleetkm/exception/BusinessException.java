@@ -16,17 +16,6 @@ public final class BusinessException extends RuntimeException {
     private final String field;
 
     /**
-     * Constructs BusinessException with status and reason.
-     *
-     * @param httpStatus the HTTP status code (must not be null)
-     * @param reasonMsg the reason message (must not be null)
-     */
-    public BusinessException(final HttpStatusCode httpStatus,
-                             final String reasonMsg) {
-        this(httpStatus, reasonMsg, null);
-    }
-
-    /**
      * Constructs BusinessException with status, reason, and field.
      *
      * @param httpStatus the HTTP status code (must not be null)
