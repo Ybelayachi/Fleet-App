@@ -75,7 +75,7 @@ public class AdminService {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setRole(request.getRole() == null ? "ROLE_DRIVER" : request.getRole());
-        user.setActive(true);
+        user.setActive(request.getActive() == null ? true : request.getActive());
         return userRepo.save(user);
     }
 

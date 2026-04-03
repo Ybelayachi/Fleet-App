@@ -29,4 +29,7 @@ public final class CreateUserRequest {
 
     /** User role (ROLE_ADMIN, ROLE_DRIVER, ROLE_FLEET_MANAGER). */
     private String role;
+
+    /** Whether the user account is active (defaults to true if null). */
+    private Boolean active;
 }
