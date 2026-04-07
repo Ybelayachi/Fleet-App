@@ -1,20 +1,20 @@
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:db2://host.docker.internal:50000/NSI:currentSchema=FLEETDB;}
-    username: ${SPRING_DATASOURCE_USERNAME:db2admin}
-    password: ${SPRING_DATASOURCE_PASSWORD:DBZ87ken/1987@}
-    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:com.ibm.db2.jcc.DB2Driver}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://fleet-db:5432/fleetdb}
+    username: ${SPRING_DATASOURCE_USERNAME:fleetuser}
+    password: ${SPRING_DATASOURCE_PASSWORD:fleetpassword}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.postgresql.Driver}
   jpa:
     hibernate:
       ddl-auto: validate
     properties:
       hibernate:
-        dialect: ${SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT:org.hibernate.dialect.DB2Dialect}
-        default_schema: FLEETDB
+        dialect: ${SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT:org.hibernate.dialect.PostgreSQLDialect}
+        default_schema: fleetdb
   flyway:
     enabled: true
     locations: classpath:db/migration
-    schemas: FLEETDB
+    schemas: fleetdb
     baseline-on-migrate: true
     baseline-version: 1
 

@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: "jdbc:h2:mem:fleetkm_e2e;MODE=DB2;NON_KEYWORDS=YEAR,MONTH;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;INIT=CREATE SCHEMA IF NOT EXISTS FLEETDB\\;SET SCHEMA FLEETDB"
+    url: "jdbc:h2:mem:fleetkm_e2e;MODE=PostgreSQL;NON_KEYWORDS=YEAR,MONTH;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;INIT=CREATE SCHEMA IF NOT EXISTS fleetdb\\;SET SCHEMA fleetdb"
     username: sa
     password:
     driver-class-name: org.h2.Driver
@@ -10,7 +10,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
-        default_schema: FLEETDB
+        default_schema: fleetdb
         globally_quoted_identifiers: true
     show-sql: false
   flyway:

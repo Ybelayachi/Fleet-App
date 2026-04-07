@@ -6,5 +6,7 @@ metadata:
 data:
   SPRING_PROFILES_ACTIVE: "docker"
   SERVER_PORT: "8080"
-  SPRING_DATASOURCE_URL: "jdbc:db2://host.docker.internal:50000/NSI:currentSchema=FLEETDB;"
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://fleet-db:5432/fleetdb"
+  SPRING_DATASOURCE_DRIVER_CLASS_NAME: "org.postgresql.Driver"
+  SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: "org.hibernate.dialect.PostgreSQLDialect"
   APP_JWT_EXPIRATION_MS: "86400000"

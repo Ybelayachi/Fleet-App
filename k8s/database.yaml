@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fleet-db-pvc
+  namespace: fleet
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fleet-db
+  namespace: fleet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fleet-db
+  template:
+    metadata:
+      labels:
+        app: fleet-db
+    spec:
+      containers:
+        - name: fleet-db
+          image: postgres:16
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: "fleetdb"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: fleet-backend-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fleet-backend-secret
+                  key: POSTGRES_PASSWORD
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          volumeMounts:
+            - name: db-storage
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "fleetuser", "-d", "fleetdb"]
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: fleet-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleet-db
+  namespace: fleet
+spec:
+  selector:
+    app: fleet-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+  type: ClusterIP

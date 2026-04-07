@@ -64,9 +64,8 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>com.ibm.db2</groupId>
-      <artifactId>jcc</artifactId>
-      <version>11.5.7.0</version>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -95,7 +94,7 @@
     </dependency>
     <dependency>
       <groupId>org.flywaydb</groupId>
-      <artifactId>flyway-database-db2</artifactId>
+      <artifactId>flyway-database-postgresql</artifactId>
     </dependency>
   </dependencies>
   <build>

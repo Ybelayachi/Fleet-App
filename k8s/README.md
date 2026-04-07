@@ -1,14 +1,28 @@
-# Kubernetes local (backend + frontend)
+# Kubernetes — Fleet KM (Cloud / Production)
 
-## À quoi sert Kubernetes ?
+> **Usage local** : préférer `docker-compose up -d` à la racine du projet.  
+> Les manifestes Kubernetes sont destinés au déploiement cloud (Azure AKS, AWS EKS, GCP GKE).
 
-Kubernetes sert à **orchestrer** les conteneurs en production (ou en local) :
+## Stack déployée
 
-- redémarrage automatique des pods en cas de crash
-- déploiements reproductibles via fichiers YAML
-- scalabilité horizontale (plusieurs réplicas)
-- exposition réseau contrôlée (Services)
-- séparation config/secrets
+| Composant | Image | Description |
+|-----------|-------|-------------|
+| `fleet-db` | `postgres:16` | Base de données PostgreSQL (PVC 1Gi) |
+| `fleet-backend` | `projetangular-fleet-backend` | API Spring Boot + Flyway |
+| `fleet-frontend` | `projetangular-fleet-frontend` | Angular SSR |
+
+## Fichiers
+
+| Fichier | Rôle |
+|---------|------|
+| `namespace.yaml` | Namespace `fleet` |
+| `backend-secret.yaml` | Credentials DB + JWT secret |
+| `backend-configmap.yaml` | Config datasource PostgreSQL |
+| `database.yaml` | Deployment + Service + PVC PostgreSQL |
+| `backend.yaml` | Deployment + Service backend |
+| `frontend.yaml` | Deployment + Service frontend |
+| `ingress.yaml` | Ingress nginx (`fleet.local`) |
+| `hpa.yaml` | HorizontalPodAutoscaler (1-3 réplicas) |
 
 ## Prérequis
 
@@ -22,12 +36,58 @@ Depuis la racine du projet :
 ```powershell
 docker compose build
 kubectl apply -f k8s/namespace.yaml
-kubectl apply -f k8s/backend-configmap.yaml
 kubectl apply -f k8s/backend-secret.yaml
+kubectl apply -f k8s/backend-configmap.yaml
+kubectl apply -f k8s/database.yaml
 kubectl apply -f k8s/backend.yaml
 kubectl apply -f k8s/frontend.yaml
 kubectl apply -f k8s/ingress.yaml
 kubectl apply -f k8s/hpa.yaml
+```
+
+Vérification :
+
+```powershell
+kubectl get pods -n fleet
+kubectl get services -n fleet
+```
+
+## Mettre à jour après modification du code
+
+```powershell
+# 1) Rebuild des images
+docker compose build fleet-backend fleet-frontend
+
+# 2) Réappliquer les manifests
+kubectl apply -f k8s/backend.yaml
+kubectl apply -f k8s/frontend.yaml
+
+# 3) Forcer le redéploiement
+kubectl rollout restart deployment/fleet-backend -n fleet
+kubectl rollout restart deployment/fleet-frontend -n fleet
+
+# 4) Attendre la fin
+kubectl rollout status deployment/fleet-backend -n fleet
+kubectl rollout status deployment/fleet-frontend -n fleet
+```
+
+## Logs
+
+```powershell
+kubectl logs deployment/fleet-backend -n fleet --tail=100
+kubectl logs deployment/fleet-frontend -n fleet --tail=100
+kubectl logs deployment/fleet-db -n fleet --tail=50
+```
+
+Accès frontend local (NodePort) : `http://localhost:30200`
+
+## Tests E2E Selenium sur Kubernetes
+
+```powershell
+cd selenium-e2e
+mvn test
+# Mode visible :
+mvn test "-De2e.headless=false" "-De2e.pauseMs=5000"
 ```
 
 ## Mettre à jour après modification du code

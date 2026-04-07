@@ -1,21 +1,59 @@
 services:
+
+  # ─── 1. Base de données PostgreSQL ───────────────────────────────────────
+  fleet-db:
+    image: postgres:16
+    container_name: fleet-db
+    environment:
+      POSTGRES_DB: fleetdb
+      POSTGRES_USER: ${POSTGRES_USER:-fleetuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fleetpassword}
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fleetuser -d fleetdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ─── 2. Backend Spring Boot ───────────────────────────────────────────────
   fleet-backend:
     build:
       context: ./fleet-backend
       dockerfile: Dockerfile
     container_name: fleet-backend
+    depends_on:
+      fleet-db:
+        condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SERVER_PORT: 8080
-      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:db2://host.docker.internal:50000/NSI:currentSchema=FLEETDB;}
-      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-db2admin}
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-DBZ87ken/1987@}
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://fleet-db:5432/fleetdb}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-fleetuser}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-fleetpassword}
       APP_JWT_SECRET: ${APP_JWT_SECRET:-ChangeThisSecretKeyForProdChangeThisSecretKey}
       APP_JWT_EXPIRATION_MS: ${APP_JWT_EXPIRATION_MS:-86400000}
     ports:
       - '8080:8080'
     restart: unless-stopped
 
+  # ─── 3. pgAdmin (interface web pour visualiser la DB) ────────────────────
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: fleet-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@fleet.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - '5050:80'
+    depends_on:
+      - fleet-db
+    restart: unless-stopped
+
+  # ─── 4. Frontend Angular ──────────────────────────────────────────────────
   fleet-frontend:
     build:
       context: ./fleet-frontend
@@ -30,3 +68,6 @@ services:
     ports:
       - '4200:4200'
     restart: unless-stopped
+
+volumes:
+  db_data:
