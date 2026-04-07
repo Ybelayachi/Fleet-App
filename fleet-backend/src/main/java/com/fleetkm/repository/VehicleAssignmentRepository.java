@@ -2,6 +2,7 @@ package com.fleetkm.repository;
 
 import com.fleetkm.entity.VehicleAssignment;
 import com.fleetkm.entity.AppUser;
+import com.fleetkm.entity.Vehicle;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
@@ -15,4 +16,12 @@ public interface VehicleAssignmentRepository
      */
     List<VehicleAssignment> findByUserAndEndDateIsNull(
             AppUser user);
+
+    /**
+     * Checks whether a vehicle already has an active assignment.
+     *
+     * @param vehicle the vehicle to check
+     * @return true if the vehicle is currently assigned to a driver
+     */
+    boolean existsByVehicleAndEndDateIsNull(Vehicle vehicle);
 }

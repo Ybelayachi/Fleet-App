@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 import com.fleetkm.exception.BusinessException;
 import java.time.OffsetDateTime;
 
@@ -156,6 +157,28 @@ public final class GlobalExceptionHandler {
         body.put("path", req.getRequestURI());
         body.put("timestamp", OffsetDateTime.now().toString());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+    }
+
+    /**
+     * Handles ResponseStatusException thrown by services.
+     *
+     * @param ex the exception (must not be null)
+     * @param req the HTTP request (must not be null)
+     * @return response entity with the status and reason from the exception
+     */
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<?> handleResponseStatus(
+            final ResponseStatusException ex,
+            final HttpServletRequest req) {
+        LOGGER.warn("ResponseStatusException for {} {}: {}",
+                req.getMethod(),
+                req.getRequestURI(),
+                ex.getReason());
+        Map<String, Object> body = new HashMap<>();
+        body.put("error", ex.getReason());
+        body.put("path", req.getRequestURI());
+        body.put("timestamp", OffsetDateTime.now().toString());
+        return ResponseEntity.status(ex.getStatusCode()).body(body);
     }
 
     /**

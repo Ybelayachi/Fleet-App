@@ -17,6 +17,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 @WebMvcTest(AdminController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -44,5 +46,19 @@ public class AdminControllerTest {
 
         mvc.perform(post("/api/admin/assignments").contentType(MediaType.APPLICATION_JSON_VALUE).content(Objects.requireNonNull(mapper.writeValueAsString(req))))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void assignVehicle_alreadyAssigned_returnsConflict() throws Exception {
+        AssignRequest req = new AssignRequest(1L, 2L);
+
+        when(adminService.assignVehicle(eq(1L), eq(2L)))
+                .thenThrow(new ResponseStatusException(HttpStatus.CONFLICT,
+                        "Ce véhicule est déjà affecté à un conducteur"));
+
+        mvc.perform(post("/api/admin/assignments")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(Objects.requireNonNull(mapper.writeValueAsString(req))))
+                .andExpect(status().isConflict());
     }
 }

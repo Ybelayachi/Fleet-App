@@ -116,6 +116,11 @@ public class AdminService {
         Vehicle vehicle = vehicleRepo.findById(vehicleId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.BAD_REQUEST, "Véhicule introuvable"));
+        if (assignmentRepo.existsByVehicleAndEndDateIsNull(vehicle)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Ce véhicule est déjà affecté à un conducteur");
+        }
         VehicleAssignment assignment = new VehicleAssignment();
         assignment.setUser(user);
         assignment.setVehicle(vehicle);
