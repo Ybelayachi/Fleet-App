@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
@@ -13,6 +13,7 @@ import { NgIf } from '@angular/common';
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    RouterLink,
     NgIf,
     InputTextModule,
     ButtonModule,

@@ -1,10 +1,15 @@
 package com.fleetkm.controller;
 
 import com.fleetkm.dto.AuthRequest;
+import com.fleetkm.dto.ChangePasswordRequest;
+import com.fleetkm.dto.ForgotPasswordRequest;
+import com.fleetkm.dto.ResetPasswordRequest;
 import com.fleetkm.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -77,6 +82,70 @@ public final class AuthController {
         }
         try {
             return ResponseEntity.ok(authService.getProfile(principal.getName()));
+        } catch (org.springframework.web.server.ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatusCode())
+                    .body(Map.of("error", ex.getReason()));
+        }
+    }
+
+    /**
+     * Changes the password for the currently authenticated user.
+     *
+     * @param request the change password request (currentPassword + newPassword)
+     * @param principal the authenticated user
+     * @return 200 on success, 400 if current password is wrong
+     */
+    @PutMapping("/password")
+    public ResponseEntity<?> changePassword(
+            @Valid @RequestBody final ChangePasswordRequest request,
+            final Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Non authentifié"));
+        }
+        try {
+            authService.changePassword(principal.getName(), request);
+            return ResponseEntity.ok(Map.of("status", "Mot de passe modifié avec succès"));
+        } catch (org.springframework.web.server.ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatusCode())
+                    .body(Map.of("error", ex.getReason()));
+        }
+    }
+
+    /**
+     * Initiates a password reset by generating a one-time token (valid 1 hour).
+     * In production, this token would be sent by email.
+     *
+     * @param request the forgot password request containing the user email
+     * @return 200 with the reset token, or 404 if email not found
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(
+            @Valid @RequestBody final ForgotPasswordRequest request) {
+        try {
+            String token = authService.forgotPassword(request);
+            return ResponseEntity.ok(Map.of(
+                    "message", "Token de réinitialisation généré",
+                    "token", token));
+        } catch (org.springframework.web.server.ResponseStatusException ex) {
+            return ResponseEntity.status(ex.getStatusCode())
+                    .body(Map.of("error", ex.getReason()));
+        }
+    }
+
+    /**
+     * Resets the password using a valid reset token.
+     *
+     * @param request the reset password request (token + newPassword)
+     * @return 200 on success, 400 if token is invalid or expired
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(
+            @Valid @RequestBody final ResetPasswordRequest request) {
+        try {
+            authService.resetPassword(request);
+            return ResponseEntity.ok(
+                    Map.of("status", "Mot de passe réinitialisé avec succès"));
         } catch (org.springframework.web.server.ResponseStatusException ex) {
             return ResponseEntity.status(ex.getStatusCode())
                     .body(Map.of("error", ex.getReason()));

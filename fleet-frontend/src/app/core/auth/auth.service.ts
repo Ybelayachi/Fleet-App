@@ -26,6 +26,20 @@ export class AuthService {
     private readonly router: Router
   ) {}
 
+  forgotPassword(email: string): Observable<{ message: string; token: string }> {
+    return this.http.post<{ message: string; token: string }>(
+      `${environment.apiBaseUrl}/api/auth/forgot-password`,
+      { email }
+    );
+  }
+
+  resetPassword(token: string, newPassword: string): Observable<{ status: string }> {
+    return this.http.post<{ status: string }>(
+      `${environment.apiBaseUrl}/api/auth/reset-password`,
+      { token, newPassword }
+    );
+  }
+
   login(email: string, password: string): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${environment.apiBaseUrl}/api/auth/login`, {

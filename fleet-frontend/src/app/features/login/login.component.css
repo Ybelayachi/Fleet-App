@@ -37,12 +37,18 @@
   height: 44px;
 }
 
-:host ::ng-deep .p-inputtext {
-  width: 100%;
+.login__forgot {
+  text-align: center;
+  margin-top: 12px;
 }
 
-:host ::ng-deep .login__spinner {
-  width: 20px;
-  height: 20px;
-  margin-left: 8px;
+.login__forgot a {
+  color: #475569;
+  font-size: 0.875rem;
+  text-decoration: none;
 }
+
+.login__forgot a:hover {
+  text-decoration: underline;
+}
+
