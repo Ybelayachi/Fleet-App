@@ -32,7 +32,7 @@ class MileageSecondDeclarationValidationE2ETest extends BaseE2ETest {
                 "Megane E-Tech", plate, "2025-01-15");
         assignVehicleAsAdmin(adminToken, driverId, vehicleId);
 
-        loginViaUi(driverEmail, password);
+        loginViaUi(driverEmail, password, "ROLE_DRIVER");
 
         WebDriverWait longWait = new WebDriverWait(driver, Duration.ofSeconds(30));
         longWait.until(ExpectedConditions.urlContains("/driver/vehicles"));
@@ -46,17 +46,16 @@ class MileageSecondDeclarationValidationE2ETest extends BaseE2ETest {
 
         longWait.until(ExpectedConditions.urlContains("/driver/mileage"));
         longWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("mileage-value")));
+        waitForVehicleSelected(longWait);
 
-        driver.findElement(By.id("mileage-value")).clear();
-        driver.findElement(By.id("mileage-value")).sendKeys("2000");
+        fillMileageInput("2000");
         driver.findElement(By.xpath("//button[contains(.,'Soumettre le kilométrage')]")).click();
 
         longWait.until(ExpectedConditions.visibilityOfElementLocated(
                 By.xpath("//*[contains(text(),'Kilométrage enregistré avec succès.')]")
         ));
 
-        driver.findElement(By.id("mileage-value")).clear();
-        driver.findElement(By.id("mileage-value")).sendKeys("1500");
+        fillMileageInput("1500");
         driver.findElement(By.xpath("//button[contains(.,'Soumettre le kilométrage')]")).click();
 
         By errorSelector = By.cssSelector(".panel__messages .error");
@@ -86,7 +85,7 @@ class MileageSecondDeclarationValidationE2ETest extends BaseE2ETest {
                 "Megane E-Tech", plate, "2025-01-15");
         assignVehicleAsAdmin(adminToken, driverId, vehicleId);
 
-        loginViaUi(driverEmail, password);
+        loginViaUi(driverEmail, password, "ROLE_DRIVER");
 
         WebDriverWait longWait = new WebDriverWait(driver, Duration.ofSeconds(30));
         longWait.until(ExpectedConditions.urlContains("/driver/vehicles"));
@@ -100,17 +99,16 @@ class MileageSecondDeclarationValidationE2ETest extends BaseE2ETest {
 
         longWait.until(ExpectedConditions.urlContains("/driver/mileage"));
         longWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("mileage-value")));
+        waitForVehicleSelected(longWait);
 
-        driver.findElement(By.id("mileage-value")).clear();
-        driver.findElement(By.id("mileage-value")).sendKeys("2100");
+        fillMileageInput("2100");
         driver.findElement(By.xpath("//button[contains(.,'Soumettre le kilométrage')]"))
                 .click();
 
         By successSelector = By.cssSelector(".panel__messages .success");
         longWait.until(ExpectedConditions.visibilityOfElementLocated(successSelector));
 
-        driver.findElement(By.id("mileage-value")).clear();
-        driver.findElement(By.id("mileage-value")).sendKeys("2600");
+        fillMileageInput("2600");
         driver.findElement(By.xpath("//button[contains(.,'Soumettre le kilométrage')]"))
                 .click();
 

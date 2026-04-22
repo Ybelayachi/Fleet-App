@@ -34,7 +34,7 @@ class AdminPaginationE2ETest extends BaseE2ETest {
                     "User" + index, "Pagination", "ROLE_DRIVER");
         }
 
-        loginViaUi(adminEmail, password);
+        loginViaUi(adminEmail, password, "ROLE_ADMIN");
 
         WebDriverWait longWait = new WebDriverWait(driver, Duration.ofSeconds(30));
         longWait.until(ExpectedConditions.urlContains("/admin/users"));
@@ -92,7 +92,7 @@ class AdminPaginationE2ETest extends BaseE2ETest {
                 "Inactive" + index, "Pagination", "ROLE_DRIVER", false);
         }
 
-        loginViaUi(adminEmail, password);
+        loginViaUi(adminEmail, password, "ROLE_ADMIN");
 
         WebDriverWait longWait = new WebDriverWait(driver, Duration.ofSeconds(30));
         longWait.until(ExpectedConditions.urlContains("/admin/users"));

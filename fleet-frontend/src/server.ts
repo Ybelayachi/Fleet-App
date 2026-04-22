@@ -31,15 +31,31 @@ app.use('/api', async (req, res, next) => {
     });
 
     requestHeaders.set('host', new URL(backendUrl).host);
+    // Strip browser-side origin/referer — the proxy is server-side so the
+    // backend's CORS filter must not see the browser's origin header.
+    requestHeaders.delete('origin');
+    requestHeaders.delete('referer');
 
     const isBodyAllowed = req.method !== 'GET' && req.method !== 'HEAD';
+
+    // Buffer the request body before forwarding so that Node.js's Readable
+    // stream is fully consumed before passing it to undici's fetch (Node 20).
+    // Passing a raw Readable as body can cause undici to hang waiting for
+    // the stream to end, especially when Content-Length is also forwarded.
+    let bodyBuffer: Uint8Array | undefined;
+    if (isBodyAllowed) {
+      const chunks: Buffer[] = [];
+      for await (const chunk of req) {
+        chunks.push(chunk as Buffer);
+      }
+      bodyBuffer = new Uint8Array(Buffer.concat(chunks));
+    }
+
     const response = await fetch(targetUrl, {
       method: req.method,
       headers: requestHeaders,
-      body: isBodyAllowed ? (req as unknown as BodyInit) : undefined,
-      duplex: 'half',
-    } as RequestInit & { duplex: 'half' });
-
+      body: bodyBuffer as unknown as BodyInit,
+    });
     res.status(response.status);
     response.headers.forEach((value, key) => {
       if (key.toLowerCase() === 'transfer-encoding') {

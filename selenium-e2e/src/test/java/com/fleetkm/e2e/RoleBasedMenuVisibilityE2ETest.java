@@ -15,7 +15,7 @@ class RoleBasedMenuVisibilityE2ETest extends BaseE2ETest {
         String password = testPassword();
         ensureUserExists(email, password, "ROLE_ADMIN");
 
-        loginViaUi(email, password);
+        loginViaUi(email, password, "ROLE_ADMIN");
         wait.until(ExpectedConditions.urlContains("/admin/users"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h2[contains(.,'Utilisateurs')]")));
 
@@ -33,7 +33,7 @@ class RoleBasedMenuVisibilityE2ETest extends BaseE2ETest {
         String password = testPassword();
         ensureUserExists(email, password, "ROLE_DRIVER");
 
-        loginViaUi(email, password);
+        loginViaUi(email, password, "ROLE_DRIVER");
         wait.until(ExpectedConditions.urlContains("/driver/vehicles"));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h2[contains(.,'Mes véhicules')]")));
 

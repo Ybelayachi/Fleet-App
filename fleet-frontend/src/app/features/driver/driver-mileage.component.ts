@@ -58,6 +58,16 @@ export class DriverMileageComponent implements OnInit {
     });
   }
 
+  syncMileageFromDom(event: Event): void {
+    const raw = (event.target as HTMLInputElement).value;
+    const parsed = raw !== '' ? parseFloat(raw) : null;
+    // Always patch from the DOM value on blur.
+    // In zoneless Angular, sendKeys events may not update the FormControl via
+    // NumberValueAccessor, so we explicitly sync on every blur event.
+    this.form.patchValue({ mileage: parsed });
+    this.cdr.markForCheck();
+  }
+
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();

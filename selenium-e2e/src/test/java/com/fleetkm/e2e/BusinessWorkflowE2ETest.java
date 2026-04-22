@@ -45,9 +45,9 @@ class BusinessWorkflowE2ETest extends BaseE2ETest {
 
         longWait.until(ExpectedConditions.urlContains("/driver/mileage"));
         longWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("mileage-value")));
+        waitForVehicleSelected(longWait);
 
-        driver.findElement(By.id("mileage-value")).clear();
-        driver.findElement(By.id("mileage-value")).sendKeys("1234");
+        fillMileageInput("1234");
         driver.findElement(By.xpath("//button[contains(.,'Soumettre le kilométrage')]")).click();
 
         longWait.until(ExpectedConditions.visibilityOfElementLocated(

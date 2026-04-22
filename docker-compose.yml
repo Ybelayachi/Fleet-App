@@ -2,6 +2,7 @@ services:
 
   # ─── 1. Base de données PostgreSQL ───────────────────────────────────────
   fleet-db:
+    profiles: ["prod"]
     image: postgres:16
     container_name: fleet-db
     environment:
@@ -21,6 +22,7 @@ services:
 
   # ─── 2. Backend Spring Boot ───────────────────────────────────────────────
   fleet-backend:
+    profiles: ["prod"]
     build:
       context: ./fleet-backend
       dockerfile: Dockerfile
@@ -42,6 +44,7 @@ services:
 
   # ─── 3. pgAdmin (interface web pour visualiser la DB) ────────────────────
   pgadmin:
+    profiles: ["prod"]
     image: dpage/pgadmin4
     container_name: fleet-pgadmin
     environment:
@@ -55,6 +58,7 @@ services:
 
   # ─── 4. Frontend Angular ──────────────────────────────────────────────────
   fleet-frontend:
+    profiles: ["prod"]
     build:
       context: ./fleet-frontend
       dockerfile: Dockerfile
@@ -68,6 +72,69 @@ services:
     ports:
       - '4200:4200'
     restart: unless-stopped
+
+  # ─── 5. Backend E2E isolé (H2 in-memory, sans PostgreSQL) ──────────────────
+  fleet-backend-e2e:
+    profiles: ["e2e"]
+    build:
+      context: ./fleet-backend
+      dockerfile: Dockerfile
+    container_name: fleet-backend-e2e
+    environment:
+      SPRING_PROFILES_ACTIVE: e2e
+      SERVER_PORT: 8080
+      APP_JWT_SECRET: ${APP_JWT_SECRET:-ChangeThisSecretKeyForProdChangeThisSecretKey}
+      APP_JWT_EXPIRATION_MS: ${APP_JWT_EXPIRATION_MS:-86400000}
+    ports:
+      - '8081:8080'
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -o /dev/null http://localhost:8080/api/auth || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+    restart: "no"
+
+  # ─── 6. Frontend E2E isolé (pointe vers fleet-backend-e2e) ──────────────
+  fleet-frontend-e2e:
+    profiles: ["e2e"]
+    build:
+      context: ./fleet-frontend
+      dockerfile: Dockerfile
+    container_name: fleet-frontend-e2e
+    environment:
+      NODE_ENV: production
+      PORT: 4200
+      BACKEND_URL: http://fleet-backend-e2e:8080
+    ports:
+      - '4201:4200'
+    depends_on:
+      fleet-backend-e2e:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:4200 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: "no"
+
+  # ─── 7. Tests Selenium E2E (Chrome headless, H2 in-memory) ──────────────
+  selenium-e2e:
+    profiles: ["e2e"]
+    build:
+      context: ./selenium-e2e
+      dockerfile: Dockerfile
+    container_name: selenium-e2e
+    shm_size: '512m'
+    environment:
+      BASE_URL: http://fleet-frontend-e2e:4200
+      E2E_API_ROOT_URL: http://fleet-backend-e2e:8080
+    depends_on:
+      fleet-frontend-e2e:
+        condition: service_healthy
+    restart: "no"
+
 
 volumes:
   db_data:

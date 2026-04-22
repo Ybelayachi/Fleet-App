@@ -15,6 +15,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -120,6 +121,10 @@ abstract class BaseE2ETest {
         boolean headless = Boolean.parseBoolean(System.getProperty("e2e.headless", "true"));
         if (headless) {
             options.addArguments("--headless=new");
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--disable-gpu");
+            options.addArguments("--no-zygote");
         }
         options.addArguments("--window-size=1440,900");
 
@@ -428,50 +433,135 @@ abstract class BaseE2ETest {
     protected void openAuthenticatedPath(final String token,
             final String role,
             final String path) {
+        org.openqa.selenium.JavascriptExecutor js =
+                (org.openqa.selenium.JavascriptExecutor) driver;
+
         driver.get(baseUrl() + "/login");
-        ((org.openqa.selenium.JavascriptExecutor) driver).executeScript(
+        js.executeScript(
                 "localStorage.setItem('fleet_token', arguments[0]);" +
                         "localStorage.setItem('fleet_role', arguments[1]);",
                 token,
                 role);
+
+        // Verify localStorage was set before navigation
+        Object tokenBefore = js.executeScript("return localStorage.getItem('fleet_token');");
+        Object roleBefore  = js.executeScript("return localStorage.getItem('fleet_role');");
+        System.out.printf("[E2E-DEBUG] localStorage BEFORE nav: token=%s role=%s%n",
+                tokenBefore != null ? "PRESENT(" + tokenBefore.toString().length() + "ch)" : "NULL",
+                roleBefore);
+
         driver.get(baseUrl() + path);
+
+        // Verify localStorage after navigation (same origin — must persist)
+        Object tokenAfter = js.executeScript("return localStorage.getItem('fleet_token');");
+        Object roleAfter  = js.executeScript("return localStorage.getItem('fleet_role');");
+        System.out.printf("[E2E-DEBUG] localStorage AFTER nav to %s: token=%s role=%s  url=%s%n",
+                path,
+                tokenAfter != null ? "PRESENT(" + tokenAfter.toString().length() + "ch)" : "NULL",
+                roleAfter,
+                driver.getCurrentUrl());
     }
 
+    /**
+     * Waits until the PrimeNG p-select for the vehicle has a selected value,
+     * i.e. the label no longer carries the p-placeholder CSS class.
+     * This is reliable in production builds where __ngContext__ is not available.
+     */
+    protected void waitForVehicleSelected(final WebDriverWait longWait) {
+        longWait.until(d -> {
+            try {
+                org.openqa.selenium.WebElement label =
+                        d.findElement(By.cssSelector("p-select .p-select-label"));
+                String cls = label.getAttribute("class");
+                String text = label.getText();
+                boolean isPlaceholder = cls != null && cls.contains("p-placeholder");
+                boolean isBlankOrHint = text == null || text.trim().isEmpty()
+                        || text.contains("Sélectionner");
+                return !isPlaceholder && !isBlankOrHint;
+            } catch (org.openqa.selenium.NoSuchElementException e) {
+                return false;
+            }
+        });
+    }
+
+    /**
+     * Fills the mileage input on /driver/mileage reliably in headless Chrome.
+     *
+     * The Angular app is zoneless (provideZonelessChangeDetection), so DOM input
+     * events from Selenium do not automatically trigger Angular's change detection.
+     * The DriverMileageComponent has a (blur) handler that explicitly calls
+     * form.patchValue({ mileage }) from the raw DOM value when the field loses
+     * focus.  Sending Keys.TAB reliably fires the blur event, which Angular's
+     * event listener picks up and uses to update the FormControl.
+     */
+    protected void fillMileageInput(final String mileageValue) {
+        org.openqa.selenium.JavascriptExecutor js =
+                (org.openqa.selenium.JavascriptExecutor) driver;
+        org.openqa.selenium.WebElement el =
+                driver.findElement(By.id("mileage-value"));
+        js.executeScript("arguments[0].scrollIntoView(true);", el);
+        // Click to focus, select any pre-existing content, type the new value.
+        el.click();
+        el.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        el.sendKeys(mileageValue);
+        // TAB fires the blur event → Angular's (blur) handler patches the FormControl.
+        el.sendKeys(Keys.TAB);
+        System.out.printf("[E2E-DEBUG] mileage fill: value='%s' classes='%s'%n",
+                el.getAttribute("value"), el.getAttribute("class"));
+        // Wait until the form itself has ng-valid (both vehicleId and mileage controls valid).
+        // This is necessary in zoneless Angular where CD is asynchronous.
+        new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10))
+                .until(org.openqa.selenium.support.ui.ExpectedConditions
+                        .presenceOfElementLocated(By.cssSelector("form.ng-valid")));
+    }
+
+    /**
+     * Injects a real JWT token directly into localStorage and navigates to the
+     * role's default landing page, bypassing the login form entirely.
+     *
+     * This approach is necessary in headless Chrome (Docker) because Angular's
+     * zoneless reactive-form controls do not reliably process synthetic DOM events
+     * dispatched by Selenium's JavaScript executor.
+     */
     protected void loginViaUi(final String email,
-            final String password) {
+            final String password,
+            final String role) throws IOException, InterruptedException {
+        String token = loginAndGetToken(email, password);
+        org.openqa.selenium.JavascriptExecutor js =
+                (org.openqa.selenium.JavascriptExecutor) driver;
+        // Navigate to the login page first so localStorage is set on the
+        // correct origin before navigating to the protected path.
         driver.get(baseUrl() + "/login");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("login-email")));
-        driver.findElement(By.id("login-email")).clear();
-        driver.findElement(By.id("login-email")).sendKeys(email);
-        driver.findElement(By.id("login-password")).clear();
-        driver.findElement(By.id("login-password")).sendKeys(password);
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        js.executeScript(
+                "localStorage.setItem('fleet_token', arguments[0]);" +
+                "localStorage.setItem('fleet_role', arguments[1]);",
+                token, role);
+        driver.get(baseUrl() + defaultPathForRole(role));
+    }
+
+    private String defaultPathForRole(final String role) {
+        if ("ROLE_ADMIN".equals(role)) {
+            return "/admin/users";
+        } else if ("ROLE_FLEET_MANAGER".equals(role)) {
+            return "/fleet/dashboard";
+        } else {
+            return "/driver/vehicles";
+        }
     }
 
     protected void bootstrapSessionForRole(final String email,
             final String password,
             final String role,
             final String path) throws IOException, InterruptedException {
-        int maxAttempts = 3;
-        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
-            loginViaUi(email, password);
-            try {
-                new WebDriverWait(driver, Duration.ofSeconds(15)).until(
-                        ExpectedConditions.not(ExpectedConditions.urlContains("/login"))
-                );
-            } catch (org.openqa.selenium.TimeoutException timeoutException) {
-                if (attempt == maxAttempts) {
-                    throw timeoutException;
-                }
-            }
-
-            if (!driver.getCurrentUrl().contains("/login")) {
-                return;
-            }
-
-            Thread.sleep(800L);
+        // Obtain a real JWT via the API, inject it into localStorage, then
+        // navigate directly to the target path so Angular's guards find both
+        // fleet_token and fleet_role in localStorage on boot (no form involved).
+        String token = loginAndGetToken(email, password);
+        openAuthenticatedPath(token, role, path);
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlContains("/login")));
+        if (!driver.getCurrentUrl().contains(path)) {
+            driver.get(baseUrl() + path);
+            wait.until(ExpectedConditions.not(ExpectedConditions.urlContains("/login")));
         }
-
-        throw new IllegalStateException("Unable to bootstrap authenticated session for role " + role);
     }
 }

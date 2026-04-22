@@ -6,7 +6,7 @@
     <div>Période : {{ month }}/{{ year }}</div>
   </div>
 
-  <form [formGroup]="form" (ngSubmit)="submit()">
+  <form [formGroup]="form">
     <div class="panel__field">
       <label for="mileage-vehicle">Véhicule</label>
       <p-select
@@ -21,7 +21,8 @@
 
     <div class="panel__field">
       <label for="mileage-value">Kilométrage (km)</label>
-      <input id="mileage-value" pInputText type="number" formControlName="mileage" />
+      <input id="mileage-value" pInputText type="number" formControlName="mileage"
+             (blur)="syncMileageFromDom($event)" />
     </div>
 
     <div class="panel__messages">
@@ -29,6 +30,6 @@
       <span class="error" *ngIf="errorMessage">{{ errorMessage }}</span>
     </div>
 
-    <button pButton type="submit" label="Soumettre le kilométrage"></button>
+    <button pButton type="button" (click)="submit()" label="Soumettre le kilométrage"></button>
   </form>
 </section>
